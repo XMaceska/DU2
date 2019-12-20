@@ -1,27 +1,36 @@
 # otevření souboru GeoJSON v Pythonu
 # mode "r" - čtení, "w" - zápis - smaže celý soubor a rovnou začne psát.
-
+#
+#
 
 import json
-
+import operator
 
 with open("import.geojson", "r", encoding="utf-8") as f:
-    data = json.load(f)
+    dataD = json.load(f)
 
-print(data)
-
+print(type(dataD))
 
 def show_coordinates(json_data):
     """loads coordinates from GEOjson into list"""
-    coordinates_list = []
+    global IdCoord_D
+    IdCoord_D={};  coordinates_list = []
     for x in json_data["features"]:
-        coordinates_data = (x["geometry"]["coordinates"])
-        coordinates_list.append(coordinates_data)
-    print(coordinates_list)
+        #coordinates_data = (x["geometry"]["coordinates"])
+        value= (x["geometry"]["coordinates"])
+        key=(x["id"]).replace ("node/","")
+        IdCoord_D[key] =value #Dictionary d = dict([ (<key>, <value>), (<key>, <value),......)
+
+        coordinates_list.append(value)
+    print(IdCoord_D) ;print()
     return(coordinates_list)
+coordinates_list = show_coordinates(dataD)
 
+IdCoord_D_sort = sorted(IdCoord_D.items(), key=operator.itemgetter(0))
+#print (IdCoord_D_sort )
 
-coordinates_list = show_coordinates(data)
+for  pol in (IdCoord_D_sort):
+    print (pol)
 
 
 def bounding_box(list):
@@ -35,4 +44,3 @@ def bounding_box(list):
 
 
 bounding_box(coordinates_list)
-
