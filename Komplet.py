@@ -4,7 +4,6 @@
 #
 
 import json
-import operator
 
 with open("import.geojson", "r", encoding="utf-8") as f:
     data = json.load(f)
@@ -13,9 +12,9 @@ features = data["features"]
 new_json = []
 
 
-
 def show_coordinates(json_data):
     """loads coordinates from GEOjson into list"""
+    global coordinates_data
     coordinates_list = []
     for x in json_data["features"]:
         coordinates_data = (x["geometry"]["coordinates"])
@@ -26,7 +25,8 @@ def show_coordinates(json_data):
 
 coordinates_D = show_coordinates(data)
 
-#
+
+
 def bounding_box(list):
     """find max and min in coordinates data"""
     global mid_x
@@ -47,11 +47,18 @@ def bounding_box(list):
     print(mid_x,mid_y)
     return bouding_box_list, mid_x, mid_y, len_x, len_y
 
+
 bounding_box(coordinates_D)
 
-def quadtree (json_data,x_mid,y_mid,id,quad):
+
+def quadtree (json_data,x_mid,y_mid,len_y, len_x, id,quad = 0):
     """quad-tree function, recursive"""
-    quad = 0
+    new_json = []
+    NW = []
+    NE = []
+    SW = []
+    SE = []
+
     if len(json_data) < 50:
         print("ok")
         new_id = id[0]
@@ -59,21 +66,42 @@ def quadtree (json_data,x_mid,y_mid,id,quad):
             i["properties"]["cluster_id"] = new_id
             new_json.append(i)
             print(new_json)
-        if quad == 1:
-            x_mid = x_mid - len_x
-            y_mid = y_mid + len_y
+            id.append(new_id + 1)
+    if quad == 1:
+        x_mid = x_mid - len_x*2
+        y_mid = y_mid + len_y
 
-        elif quad == 2:
-            x_mid = x_mid + len_x
-            y_mid = y_mid + len_y
+    elif quad == 2:
+        x_mid = x_mid + len_x*2
+        y_mid = y_mid + len_y
 
-        elif quad == 3:
-            x_mid = x_mid - len_x
-            y_mid = y_mid - len_y
+    elif quad == 3:
+        x_mid = x_mid - len_x*2
+        y_mid = y_mid - len_y
 
-        elif quad == 4:
-            x_mid = x_mid + len_x
-            y_mid = y_mid - len_y
+    elif quad == 4:
+        x_mid = x_mid + len_x*2
+        y_mid = y_mid - len_y
+
+    for u in json_data:
+        x, y = u[coordinates_data]
+
+        if x < x_mid and y > y_mid:
+            NW.append(u)
+        elif x > x_mid and y > y_mid:
+            NE.append(u)
+        elif x < x_mid and y < y_mid:
+            SW.append(u)
+        elif x < x_mid and y < y_mid:
+            SE.append(u)
+        else:
+            print("out")
+    quadtree(NW,x_mid, y_mid, len_x, len_y, id, quad = 1)
+    quadtree(NE,x_mid, y_mid, len_x, len_y, id, quad = 2)
+    quadtree(SW,x_mid, y_mid, len_x, len_y, id, quad = 3)
+    quadtree(SE,x_mid, y_mid, len_x, len_y, id, quad = 4)
+
+    return new_json,id
 
 
 
