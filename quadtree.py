@@ -4,6 +4,7 @@ def bounding_box(list):
     global y_mid
     global x_len
     global y_len
+    # shows list of all coordinates
     maxcoords = max(list)
     print("max x:", maxcoords[0])
     print("max y:", maxcoords[1])
@@ -11,6 +12,7 @@ def bounding_box(list):
     print("min x:", mincoords[0])
     print("min y:", mincoords[1])
     bouding_box_list = [[maxcoords[0],maxcoords[1],mincoords[0],mincoords[1]]]
+    # calculates middle points of coordinates
     x_mid = (maxcoords[0] + mincoords[0]) / 2
     y_mid = (maxcoords[1] + mincoords[1]) / 2
     x_len = abs(maxcoords[0] - mincoords[0]) / 2
@@ -21,12 +23,14 @@ def bounding_box(list):
 
 def quadtree (json_data, x_mid, y_mid, y_len, x_len, id, quad = 0):
     """quad-tree function, recursive"""
+
+    # making new list of each side of square
     new_json = []
     NW = []
     NE = []
     SW = []
     SE = []
-
+    # divides if quade contains more than 50 points
     if len(json_data) < 50:
         print("ok")
         new_id = id[0]
@@ -35,8 +39,9 @@ def quadtree (json_data, x_mid, y_mid, y_len, x_len, id, quad = 0):
             new_json.append(i)
             print(new_json)
             id.append(new_id + 1)
+    # set Id for each quad
     if quad == 1:
-        x_mid = x_mid - x_len * 2
+        x_mid = x_mid - x_len * 2 # "*2" because used global variable, already divided by 2
         y_mid = y_mid + y_len
 
     elif quad == 2:
@@ -50,10 +55,9 @@ def quadtree (json_data, x_mid, y_mid, y_len, x_len, id, quad = 0):
     elif quad == 4:
         x_mid = x_mid + x_len * 2
         y_mid = y_mid - y_len
-
+    # load each point into desired quad list
     for u in json_data:
         x, y = u[coordinates_data]
-
         if x < x_mid and y > y_mid:
             NW.append(u)
         elif x > x_mid and y > y_mid:
@@ -64,6 +68,7 @@ def quadtree (json_data, x_mid, y_mid, y_len, x_len, id, quad = 0):
             SE.append(u)
         else:
             print("out")
+    # recursion used for each quad
     quadtree(NW, x_mid, y_mid, x_len, y_len, id, quad = 1)
     quadtree(NE, x_mid, y_mid, x_len, y_len, id, quad = 2)
     quadtree(SW, x_mid, y_mid, x_len, y_len, id, quad = 3)
