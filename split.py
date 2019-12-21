@@ -7,9 +7,9 @@ import json, quadtree
 import operator
 
 with open("import.geojson", "r", encoding="utf-8") as f:
-    dataD = json.load(f)
+    data = json.load(f)
 
-print(type(dataD))
+print(type(data))
 
 def show_coordinates(json_data):
     """loads coordinates from GEOjson into list"""
