@@ -4,7 +4,7 @@
 #
 
 import json, quadtree
-import operator
+
 
 with open("import.geojson", "r", encoding="utf-8") as f:
     data = json.load(f)
@@ -21,10 +21,14 @@ def show_coordinates(json_data):
     print(coordinates_list)
     return(coordinates_list)
 
+
 coordinates_D = show_coordinates(data)
 bounding_box(coordinates_D)
 
+id = []
 
+
+new_json = quadtree.quadtree(data,x_mid,y_mid,y_len, x_len,id,)
 
 gj_structure = {"type": "FeatureCollection"}
 gj_structure["features"] = new_json
@@ -32,4 +36,4 @@ gj_structure["features"] = new_json
 
 with open("output.geojson", "w", encoding="utf-8") as f:
     json.dump(gj_structure,f, indent =2)
-    
+

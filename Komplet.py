@@ -1,7 +1,5 @@
 # otevření souboru GeoJSON v Pythonu
 # mode "r" - čtení, "w" - zápis - smaže celý soubor a rovnou začne psát.
-#
-#
 
 import json
 
@@ -26,13 +24,12 @@ def show_coordinates(json_data):
 coordinates_D = show_coordinates(data)
 
 
-
 def bounding_box(list):
     """find max and min in coordinates data"""
-    global mid_x
-    global mid_y
-    global len_x
-    global len_y
+    global x_mid
+    global y_mid
+    global x_len
+    global y_len
     maxcoords = max(list)
     print("max x:", maxcoords[0])
     print("max y:", maxcoords[1])
@@ -40,18 +37,18 @@ def bounding_box(list):
     print("min x:", mincoords[0])
     print("min y:", mincoords[1])
     bouding_box_list = [[maxcoords[0],maxcoords[1],mincoords[0],mincoords[1]]]
-    mid_x = (maxcoords[0] + mincoords[0])/2
-    mid_y = (maxcoords[1] + mincoords[1])/2
-    len_x = abs(maxcoords[0] - mincoords[0])/2
-    len_y = abs(maxcoords[1] - mincoords[1])/2
-    print(mid_x,mid_y)
-    return bouding_box_list, mid_x, mid_y, len_x, len_y
+    x_mid = (maxcoords[0] + mincoords[0]) / 2
+    y_mid = (maxcoords[1] + mincoords[1]) / 2
+    x_len = abs(maxcoords[0] - mincoords[0]) / 2
+    y_len = abs(maxcoords[1] - mincoords[1]) / 2
+    print(x_mid, y_mid)
+    return bouding_box_list, x_mid, y_mid, x_len, y_len
 
 
 bounding_box(coordinates_D)
 
 
-def quadtree (json_data,x_mid,y_mid,len_y, len_x, id,quad = 0):
+def quadtree (json_data, x_mid, y_mid, y_len, x_len, id, quad = 0):
     """quad-tree function, recursive"""
     new_json = []
     NW = []
@@ -68,20 +65,20 @@ def quadtree (json_data,x_mid,y_mid,len_y, len_x, id,quad = 0):
             print(new_json)
             id.append(new_id + 1)
     if quad == 1:
-        x_mid = x_mid - len_x*2
-        y_mid = y_mid + len_y
+        x_mid = x_mid - x_len * 2
+        y_mid = y_mid + y_len
 
     elif quad == 2:
-        x_mid = x_mid + len_x*2
-        y_mid = y_mid + len_y
+        x_mid = x_mid + x_len * 2
+        y_mid = y_mid + y_len
 
     elif quad == 3:
-        x_mid = x_mid - len_x*2
-        y_mid = y_mid - len_y
+        x_mid = x_mid - x_len * 2
+        y_mid = y_mid - y_len
 
     elif quad == 4:
-        x_mid = x_mid + len_x*2
-        y_mid = y_mid - len_y
+        x_mid = x_mid + x_len * 2
+        y_mid = y_mid - y_len
 
     for u in json_data:
         x, y = u[coordinates_data]
@@ -96,10 +93,10 @@ def quadtree (json_data,x_mid,y_mid,len_y, len_x, id,quad = 0):
             SE.append(u)
         else:
             print("out")
-    quadtree(NW,x_mid, y_mid, len_x, len_y, id, quad = 1)
-    quadtree(NE,x_mid, y_mid, len_x, len_y, id, quad = 2)
-    quadtree(SW,x_mid, y_mid, len_x, len_y, id, quad = 3)
-    quadtree(SE,x_mid, y_mid, len_x, len_y, id, quad = 4)
+    quadtree(NW, x_mid, y_mid, x_len, y_len, id, quad = 1)
+    quadtree(NE, x_mid, y_mid, x_len, y_len, id, quad = 2)
+    quadtree(SW, x_mid, y_mid, x_len, y_len, id, quad = 3)
+    quadtree(SE, x_mid, y_mid, x_len, y_len, id, quad = 4)
 
     return new_json,id
 
